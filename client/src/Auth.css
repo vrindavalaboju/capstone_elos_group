@@ -1,0 +1,94 @@
+/* Auth.css */
+html, body {
+  height: 100%;              /* Ensure full height to support flex centering */
+  margin: 0;                 /* Remove default margin */
+  background: #f5f7fa;       /* Same background as wrapper */
+  font-family: Arial, sans-serif;
+  color: #222;               /* Dark text color for visibility */
+}
+
+.auth-page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;   /* Horizontal centering */
+  align-items: center;       /* Vertical centering */
+  background: #f5f7fa;       /* Light background */
+  padding: 1rem;
+  box-sizing: border-box;    /* Include padding in size calculations */
+}
+
+.auth-form-box {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  max-width: 400px;
+  width: 100%;
+  box-sizing: border-box;   /* Include padding and border in width */
+  color: #222;              /* Ensure text color inside box */
+}
+
+.auth-form-box h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #222;              /* Explicit text color */
+}
+
+.auth-input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  color: #222;              /* Dark text inside inputs */
+  background-color: #fff;   /* White input background */
+}
+
+.auth-input::placeholder {
+  color: #999;              /* Light gray placeholders */
+}
+
+.auth-button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.auth-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  flex: 1;
+  min-width: 100px;
+  transition: background-color 0.3s ease;
+}
+
+.auth-button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.auth-button:disabled {
+  background-color: #99c2ff;
+  cursor: not-allowed;
+}
+
+.auth-status {
+  text-align: center;
+  font-weight: bold;
+  color: #222;             /* Default status text color */
+}
+
+.auth-status.error {
+  color: red;
+}
+
+.auth-status.success {
+  color: green;
+}
