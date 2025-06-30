@@ -5,6 +5,7 @@ import { supabase } from './supabaseClient';
 import Auth from './Auth';
 import Dashboard from './Dashboard';
 import PropertyInterestForm from './PropertyInterestForm'; // Import your form component
+import BusinessSetupForm from './BusinessSetupForm';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -46,7 +47,7 @@ export default function App() {
         />
         <Route
           path="/form"
-          element={user ? <PropertyInterestForm /> : <Navigate to="/" replace />}
+          element={user ? <BusinessSetupForm /> : <Navigate to="/" replace />}
         />
       </Routes>
     </BrowserRouter>

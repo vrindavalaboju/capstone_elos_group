@@ -1,6 +1,7 @@
 import React from 'react';
 import { supabase } from './supabaseClient';
 import { useNavigate } from 'react-router-dom';
+import BusinessSetupForm from './BusinessSetupForm';
 import PropertyInterestForm from './PropertyInterestForm';
 
 export default function Dashboard({ user }) {
@@ -21,7 +22,7 @@ export default function Dashboard({ user }) {
       </button>
 
       {/* Pass user to the form */}
-      <PropertyInterestForm user={user} />
+      <BusinessSetupForm user={user} />
     </div>
   );
 }
