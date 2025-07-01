@@ -21,7 +21,7 @@ app.add_middleware(
 class EstimateRequest(BaseModel):
     location: str
     accommodation: str
-    rooms: int
+    people: int
     season: str
 
 @app.post("/api/estimate")
@@ -30,7 +30,7 @@ def get_estimate(data: EstimateRequest):
 You are a travel cost estimator. Estimate the total travel cost in USD for:
 - Location: {data.location}
 - Accommodation type: {data.accommodation}
-- Number of rooms: {data.rooms}
+- Number of people: {data.people}
 - Time of year: {data.season}
 Provide a low and high range in USD.
 """
