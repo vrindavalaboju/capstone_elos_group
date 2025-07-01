@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { supabase } from './supabaseClient';
+import { supabase } from '../supabaseClient';
 import { useNavigate } from 'react-router-dom';
-import './Auth.css';  // Import the CSS file
+import '../assets/Auth.css';  // Import the CSS file
 
 export default function Auth() {
   const [email, setEmail] = useState('');
