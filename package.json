@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "rsuite": "^5.83.1",
+    "vite": "^7.0.0"
+  }
+}
