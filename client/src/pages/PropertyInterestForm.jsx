@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { supabase } from './supabaseClient';
-import './PropertyInterestForm.css';
+import { supabase } from '../supabaseClient';
+import '../assets/PropertyInterestForm.css';
 
 export default function PropertyInterestForm({ user }) {
   const [formData, setFormData] = useState({
