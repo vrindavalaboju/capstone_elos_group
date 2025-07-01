@@ -1,27 +1,117 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { useNavigate } from 'react-router-dom';
-import PropertyInterestForm from './PropertyInterestForm';
+import '../assets/Dashboard.css';
 
 export default function Dashboard({ user }) {
   const navigate = useNavigate();
+  const [name, setName] = useState('');
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserName = async () => {
+      if (!user || !user.id) return;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('name')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching name:', error.message);
+      } else {
+        setName(data.name);
+      }
+    };
+
+    fetchUserName();
+  }, [user]);
+
+  useEffect(() => {
+    const fetchAllRequests = async () => {
+
+      setLoading(true);
+
+      const tables = [
+        { name: 'travel_forms', service: 'Travel' },
+        { name: 'business_setup_forms', service: 'Business' },
+        { name: 'property_interest_forms', service: 'Property' }
+      ];
+
+      let allRequests = [];
+
+      for (const table of tables) {
+        const { data, error } = await supabase
+          .from(table.name)
+          .select('*')
+          .eq('user_id', user.id)
+          .order('inserted_at', { ascending: false });
+
+        if (error) {
+          console.error(`Error fetching ${table.name}:`, error.message);
+        } else {
+          const enriched = data.map(entry => ({
+            ...entry,
+            service: table.service
+          }));
+          allRequests = allRequests.concat(enriched);
+        }
+      }
+
+      allRequests.sort((a, b) => new Date(b.inserted_at) - new Date(a.inserted_at));
+
+      setRequests(allRequests);
+      setLoading(false);
+    };
+
+    fetchAllRequests();
+  }, [user]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/');
   };
-
+  
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Welcome to your Dashboard</h2>
-      <p><strong>Logged in as:</strong> {user.email}</p>
+    <div className="dashboard-container">
+      <h2 className="dashboard-header">Welcome to your Dashboard</h2>
+      <p><strong>Logged in as:</strong> {name || user.email}</p>
 
-      <button onClick={handleLogout} style={{ marginBottom: '1rem' }}>
+      <button onClick={() => navigate('/edit-profile')} className="edit-profile">
+        Edit Profile
+      </button>
+
+      <button onClick={handleLogout} className="logout">
         Log Out
       </button>
 
-      {/* Pass user to the form */}
-      {/* <PropertyInterestForm user={user} /> */}
+      {loading ? (
+        <p>Loading requests...</p>
+      ) : requests.length === 0 ? (
+        <p>No requests submitted yet.</p>
+      ) : (
+        <table className="dashboard-table">
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Date Submitted</th>
+              <th>Status</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {requests.map((req, idx) => (
+              <tr key={idx}>
+                <td>{req.service}</td>
+                <td>{new Date(req.inserted_at).toLocaleDateString()}</td>
+                <td>Pending</td>
+                <td>{req.additional_notes || req.notes || req.additional_requests || '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
