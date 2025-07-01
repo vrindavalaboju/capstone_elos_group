@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from './supabaseClient';
 import Auth from './Auth';
-import Dashboard from './Dashboard';
+import Dashboard from './dashboard';
 import PropertyInterestForm from './PropertyInterestForm'; // Import your form component
 
 export default function App() {
