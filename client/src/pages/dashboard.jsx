@@ -58,7 +58,11 @@ export default function Dashboard({ user }) {
       <h2 className="dashboard-header">Welcome to your Dashboard</h2>
       <p><strong>Logged in as:</strong> {user.email}</p>
 
-      <button onClick={handleLogout} className="logout-button">
+      <button onClick={() => navigate('/edit-profile')} className="edit-profile">
+        Edit Profile
+      </button>
+
+      <button onClick={handleLogout} className="logout">
         Log Out
       </button>
 
