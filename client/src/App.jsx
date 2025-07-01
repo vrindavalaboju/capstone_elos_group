@@ -7,6 +7,8 @@ import PropertyInterestForm from './pages/PropertyInterestForm';
 import SidebarLayout from './components/SidebarLayout';
 import TravelForm from './pages/TravelForm';
 import BusinessForm from './pages/BusinessForm';
+import EditProfile from './pages/EditProfile';
+
 // import SettingsPage from './SettingsPage'; // Create this if needed
 // import './assets/SidebarLayout.css';
 
@@ -44,6 +46,7 @@ export default function App() {
         />
 
         {user && (
+          <>
           <Route element={<SidebarLayout />}>
             <Route path="/dashboard" element={<Dashboard user={user} />} />
             <Route path="/form/travel" element={<TravelForm user={user} />} />
@@ -51,6 +54,8 @@ export default function App() {
             <Route path="/form/business" element={<BusinessForm user={user} />} />
             {/* <Route path="/settings" element={<SettingsPage />} /> */}
           </Route>
+          <Route path="/edit-profile" element={<EditProfile user={user} />} />
+          </>
         )}
 
         {/* Redirect if not authenticated */}
@@ -58,7 +63,6 @@ export default function App() {
           <>
             <Route path="/dashboard" element={<Navigate to="/" replace />} />
             <Route path="/form/*" element={<Navigate to="/" replace />} />
-            {/* <Route path="/settings" element={<Navigate to="/" replace />} /> */}
           </>
         )}
       </Routes>
