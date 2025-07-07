@@ -48,4 +48,13 @@
   .dashboard-table tr:hover {
     background-color: #f1f1f1;
   }
+
+  .details-row {
+    background-color: #f9f9f9;
+  }
+  
+  .details-row p {
+    margin: 4px 0;
+    font-size: 0.9rem;
+  }
   
