@@ -159,7 +159,8 @@ export default function Dashboard() {
     for (const id of requestsToDelete) {
       const req = requests.find((r) => r.id === id);
       if (!req) continue;
-      await supabase.from(req.tableName).delete().eq('id', id);
+      const { error } = await supabase.from(req.tableName).delete().eq('id', id);
+      if (error) console.error('Delete error for id:', id, error.message);
     }
 
     // 2. Update statuses
@@ -168,11 +169,18 @@ export default function Dashboard() {
       if (requestsToDelete.has(id)) continue;
 
       const req = requests.find((r) => r.id === id);
-      if (!req || req.status === newStatus) continue;
+      if (!req) continue;
 
-      await supabase.from(req.tableName).update({ status: newStatus }).eq('id', id);
+      // Only update if newStatus is different from current
+      if (req.status === newStatus) continue;
+
+      const { error } = await supabase
+        .from(req.tableName)
+        .update({ status: newStatus })
+        .eq('id', id);
+
+      if (error) console.error('Update status error for id:', id, error.message);
     }
-
 
     // Refresh the requests from DB
     await fetchRequests();
