@@ -136,12 +136,6 @@ export default function Dashboard({}) {
     setLoading(false);
   };
 
-  // useEffect(() => {
-  //   if (role && userData) {
-  //     fetchRequests();
-  //   }
-  // }, [userData, role]);
-
   // Toggle requests marked for deletion on row X click
   const toggleDeleteRequest = (id) => {
     setRequestsToDelete((prev) => {
