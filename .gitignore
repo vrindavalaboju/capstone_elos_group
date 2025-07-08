@@ -5,3 +5,6 @@ server/venv/
 __pycache__/
 *.py[cod]
 .env
+.DS_Store
+node_modules/
+package-lock.json

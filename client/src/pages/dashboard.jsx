@@ -22,6 +22,7 @@ export default function Dashboard() {
   const [role, setRole] = useState('user');
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expandedIdx, setExpandedIdx] = useState(null);
 
   // For edit mode toggle
   const [isEditing, setIsEditing] = useState(false);
@@ -33,7 +34,7 @@ export default function Dashboard() {
   const [statusChanges, setStatusChanges] = useState({});
 
   useEffect(() => {
-    const fetchUserAndProfile = async () => {
+    const fetchUserAndData = async () => {
       const {
         data: { user },
         error: userError,
@@ -59,12 +60,15 @@ export default function Dashboard() {
         setName(profile.name);
         setRole(profile.role);
       }
+
+      await fetchRequests(user, profile.role);
+
     };
 
-    fetchUserAndProfile();
+    fetchUserAndData();
   }, [navigate]);
 
-  const fetchRequests = async () => {
+  const fetchRequests = async (userData, role) => {
     if (!userData || !userData.id) return;
 
     setLoading(true);
@@ -131,12 +135,6 @@ export default function Dashboard() {
     setRequests(allRequests);
     setLoading(false);
   };
-
-  useEffect(() => {
-    if (role && userData) {
-      fetchRequests();
-    }
-  }, [userData, role]);
 
   // Toggle requests marked for deletion on row X click
   const toggleDeleteRequest = (id) => {
@@ -206,15 +204,15 @@ export default function Dashboard() {
     navigate('/');
   };
 
+  const toggleDetails = (idx) => {
+    setExpandedIdx(expandedIdx === idx ? null : idx);
+  };
+
   return (
     <div className="dashboard-container">
       <h2 className="dashboard-header">Welcome to your Dashboard</h2>
-      <p>
-        <strong>Logged in as:</strong> {name || userData?.email}
-      </p>
-      <p>
-        <strong>Role:</strong> {role}
-      </p>
+      <p><strong>Logged in as:</strong> {name || userData?.email}</p>
+      <p><strong>Role:</strong> {role}</p>
 
       <button onClick={() => navigate('/edit-profile')} className="edit-profile">
         Edit Profile
@@ -266,57 +264,77 @@ export default function Dashboard() {
             <tr>
               {role === 'admin' && isEditing && <th>Delete</th>}
               <th>Service</th>
-              <th>User Name</th> {/* New column */}
+              <th>User Name</th>
               <th>Date Submitted</th>
               <th>Status</th>
-              <th>Notes</th>
+              <th>Details</th>
             </tr>
           </thead>
           <tbody>
-            {requests.map((req) => {
+            {requests.map((req, idx) => {
               const isDeleted = requestsToDelete.has(req.id);
               const currentStatus = statusChanges[req.id] || req.status;
 
               return (
-                <tr
-                  key={req.id}
-                  style={{
-                    opacity: isDeleted ? 0.5 : 1,
-                    textDecoration: isDeleted ? 'line-through' : 'none',
-                  }}
-                >
-                  {role === 'admin' && isEditing && (
+                <React.Fragment key={req.id}>
+                  <tr
+                    key={req.id}
+                    style={{
+                      opacity: isDeleted ? 0.5 : 1,
+                      textDecoration: isDeleted ? 'line-through' : 'none',
+                    }}
+                  >
+                    {role === 'admin' && isEditing && (
+                      <td>
+                        <button
+                          onClick={() => toggleDeleteRequest(req.id)}
+                          className="delete-row-button"
+                          aria-label={`Delete request ${req.id}`}
+                        >
+                          ❌
+                        </button>
+                      </td>
+                    )}
+                    <td>{req.service}</td>
+                    <td>{role === 'admin' ? req.userName : 'You'}</td>
+                    <td>{new Date(req.inserted_at).toLocaleDateString()}</td>
                     <td>
-                      <button
-                        onClick={() => toggleDeleteRequest(req.id)}
-                        className="delete-row-button"
-                        aria-label={`Delete request ${req.id}`}
-                      >
-                        ❌
+                      {role === 'admin' && isEditing ? (
+                        <select
+                          value={currentStatus}
+                          onChange={(e) => handleStatusChange(req.id, e.target.value)}
+                        >
+                          {STATUS_OPTIONS.map((opt) => (
+                            <option key={opt} value={opt}>{opt}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        currentStatus
+                      )}
+                    </td>
+                    <td>
+                      <button onClick={() => toggleDetails(idx)}>
+                        {expandedIdx === idx ? 'Hide' : 'View'}
                       </button>
                     </td>
+                  </tr>
+                  {expandedIdx === idx && (
+                    <tr className="details-row">
+                      <td colSpan={role === 'admin' ? 6 : 5}>
+                        <div>
+                          {Object.entries(req).map(([key, value]) =>
+                            !['id', 'user_id', 'inserted_at', 'service', 'status', 'tableName', 'userName'].includes(key) && (
+                              <p key={key}>
+                                <strong>{key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}:</strong>{' '}
+                                {String(value)}
+                              </p>
+                            )
+                          )}
+                        </div>
+                      </td>
+                    </tr>
                   )}
-                  <td>{req.service}</td>
-                  <td>{req.userName}</td>
-                  <td>{new Date(req.inserted_at).toLocaleDateString()}</td>
-                  <td>
-                    {role === 'admin' && isEditing ? (
-                      <select
-                        value={currentStatus}
-                        onChange={(e) => handleStatusChange(req.id, e.target.value)}
-                      >
-                        {STATUS_OPTIONS.map((opt) => (
-                          <option key={opt} value={opt}>
-                            {opt}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      currentStatus
-                    )}
-                  </td>
-                  <td>{req.additional_notes || req.notes || req.additional_requests || '—'}</td>
-                </tr>
+                </React.Fragment>
               );
             })}
           </tbody>
@@ -325,3 +343,4 @@ export default function Dashboard() {
     </div>
   );
 }
+
