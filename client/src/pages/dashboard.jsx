@@ -183,7 +183,7 @@ export default function Dashboard() {
     }
 
     // Refresh the requests from DB
-    await fetchRequests();
+    await fetchRequests(userData, role);
 
     // Reset editing state
     setIsEditing(false);
