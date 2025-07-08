@@ -15,7 +15,7 @@ const STATUS_OPTIONS = [
   'Archived',
 ];
 
-export default function Dashboard({}) {
+export default function Dashboard() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [name, setName] = useState('');
@@ -159,8 +159,6 @@ export default function Dashboard({}) {
     for (const id of requestsToDelete) {
       const req = requests.find((r) => r.id === id);
       if (!req) continue;
-      // const { error } = await supabase.from(req.tableName).delete().eq('id', id);
-      // if (error) console.error('Delete error for id:', id, error.message);
       await supabase.from(req.tableName).delete().eq('id', id);
     }
 
@@ -170,18 +168,6 @@ export default function Dashboard({}) {
       if (requestsToDelete.has(id)) continue;
 
       const req = requests.find((r) => r.id === id);
-      // if (!req) continue;
-
-      //   // Only update if newStatus is different from current
-      //   if (req.status === newStatus) continue;
-
-      //   const { error } = await supabase
-      //     .from(req.tableName)
-      //     .update({ status: newStatus })
-      //     .eq('id', id);
-
-      //   if (error) console.error('Update status error for id:', id, error.message);
-      // }
       if (!req || req.status === newStatus) continue;
 
       await supabase.from(req.tableName).update({ status: newStatus }).eq('id', id);
@@ -302,7 +288,6 @@ export default function Dashboard({}) {
                       </td>
                     )}
                     <td>{req.service}</td>
-                    {/* <td>{req.userName}</td> */}
                     <td>{role === 'admin' ? req.userName : 'You'}</td>
                     <td>{new Date(req.inserted_at).toLocaleDateString()}</td>
                     <td>
@@ -319,7 +304,6 @@ export default function Dashboard({}) {
                         currentStatus
                       )}
                     </td>
-                    {/* <td>{req.additional_notes || req.notes || req.additional_requests || '—'}</td> */}
                     <td>
                       <button onClick={() => toggleDetails(idx)}>
                         {expandedIdx === idx ? 'Hide' : 'View'}
