@@ -15,7 +15,7 @@ const STATUS_OPTIONS = [
   'Archived',
 ];
 
-export default function Dashboard() {
+export default function Dashboard({}) {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [name, setName] = useState('');
@@ -34,7 +34,7 @@ export default function Dashboard() {
   const [statusChanges, setStatusChanges] = useState({});
 
   useEffect(() => {
-    const fetchUserAndProfile = async () => {
+    const fetchUserAndData = async () => {
       const {
         data: { user },
         error: userError,
@@ -60,12 +60,15 @@ export default function Dashboard() {
         setName(profile.name);
         setRole(profile.role);
       }
+
+      await fetchRequests(user, profile.role);
+
     };
 
-    fetchUserAndProfile();
+    fetchUserAndData();
   }, [navigate]);
 
-  const fetchRequests = async () => {
+  const fetchRequests = async (userData, role) => {
     if (!userData || !userData.id) return;
 
     setLoading(true);
@@ -133,11 +136,11 @@ export default function Dashboard() {
     setLoading(false);
   };
 
-  useEffect(() => {
-    if (role && userData) {
-      fetchRequests();
-    }
-  }, [userData, role]);
+  // useEffect(() => {
+  //   if (role && userData) {
+  //     fetchRequests();
+  //   }
+  // }, [userData, role]);
 
   // Toggle requests marked for deletion on row X click
   const toggleDeleteRequest = (id) => {
