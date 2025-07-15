@@ -4,13 +4,11 @@ import { supabase } from './supabaseClient';
 import Auth from './pages/Auth';
 import Dashboard from './pages/dashboard';
 import PropertyInterestForm from './pages/PropertyInterestForm';
-import SidebarLayout from './components/SidebarLayout';
+import NavBar from './components/NavBar';
 import TravelForm from './pages/TravelForm';
 import BusinessForm from './pages/BusinessForm';
 import EditProfile from './pages/EditProfile';
-
-// import SettingsPage from './SettingsPage'; // Create this if needed
-// import './assets/SidebarLayout.css';
+import Home from './pages/Home';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -42,17 +40,17 @@ export default function App() {
       <Routes>
         <Route
           path="/"
-          element={user ? <Navigate to="/dashboard" replace /> : <Auth />}
+          element={user ? <Navigate to="/home" replace /> : <Auth />}
         />
 
         {user && (
           <>
-          <Route element={<SidebarLayout />}>
+          <Route element={<NavBar />}>
+          <Route path="/home" element={<Home user={user} />} />
             <Route path="/dashboard" element={<Dashboard user={user} />} />
             <Route path="/form/travel" element={<TravelForm user={user} />} />
             <Route path="/form/property" element={<PropertyInterestForm user={user} />} />
             <Route path="/form/business" element={<BusinessForm user={user} />} />
-            {/* <Route path="/settings" element={<SettingsPage />} /> */}
           </Route>
           <Route path="/edit-profile" element={<EditProfile user={user} />} />
           </>

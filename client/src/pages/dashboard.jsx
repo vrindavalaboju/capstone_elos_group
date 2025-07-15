@@ -230,7 +230,7 @@ export default function Dashboard() {
               onClick={() => setIsEditing(true)}
               aria-label="Enter edit mode"
             >
-              ✏️ Edit
+              Edit
             </button>
           ) : (
             <>
@@ -240,14 +240,14 @@ export default function Dashboard() {
                 aria-label="Save all changes"
                 style={{ marginRight: '8px' }}
               >
-                💾 Save
+                Save
               </button>
               <button
                 className="cancel-button"
                 onClick={cancelEditing}
                 aria-label="Cancel editing"
               >
-                ❌ Cancel
+                Cancel
               </button>
             </>
           )}
