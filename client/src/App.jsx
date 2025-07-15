@@ -8,6 +8,7 @@ import SidebarLayout from './components/SidebarLayout';
 import TravelForm from './pages/TravelForm';
 import BusinessForm from './pages/BusinessForm';
 import EditProfile from './pages/EditProfile';
+import AdminPayment from './pages/AdminPayment';
 
 // import SettingsPage from './SettingsPage'; // Create this if needed
 // import './assets/SidebarLayout.css';
@@ -52,6 +53,7 @@ export default function App() {
             <Route path="/form/travel" element={<TravelForm user={user} />} />
             <Route path="/form/property" element={<PropertyInterestForm user={user} />} />
             <Route path="/form/business" element={<BusinessForm user={user} />} />
+            <Route path="/admin/payment" element={<AdminPayment user={user} />} />
             {/* <Route path="/settings" element={<SettingsPage />} /> */}
           </Route>
           <Route path="/edit-profile" element={<EditProfile user={user} />} />

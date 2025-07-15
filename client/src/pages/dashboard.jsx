@@ -33,6 +33,9 @@ export default function Dashboard() {
   // Track status changes { requestId: newStatus }
   const [statusChanges, setStatusChanges] = useState({});
 
+  // Track which invoice is being viewed (pdf popup)
+  const [invoiceUrl, setInvoiceUrl] = useState(null);
+
   useEffect(() => {
     const fetchUserAndData = async () => {
       const {
@@ -125,11 +128,31 @@ export default function Dashboard() {
       userIdToName[p.id] = p.name || 'No Name';
     });
 
-    // Add userName field to each request
-    allRequests = allRequests.map((req) => ({
-      ...req,
-      userName: userIdToName[req.user_id] || 'Unknown',
-    }));
+    // Fetch all invoices for admin (or for current user)
+    const { data: invoicesData, error: invoicesError } = await supabase
+      .from('invoices')
+      .select('user_id, service_type, invoice_url');
+
+    if (invoicesError) {
+      console.error('Error fetching invoices:', invoicesError.message);
+    }
+
+    // Create a map to match user/service to invoice URL
+    const invoiceMap = {};
+    invoicesData?.forEach((inv) => {
+      const key = `${inv.user_id}-${inv.service_type}`;
+      invoiceMap[key] = inv.invoice_url;
+    });
+
+    // Add userName and invoiceUrl to each request
+    allRequests = allRequests.map((req) => {
+      const key = `${req.user_id}-${req.service}`;
+      return {
+        ...req,
+        userName: userIdToName[req.user_id] || 'Unknown',
+        invoiceUrl: invoiceMap[key] || null,
+      };
+    });
 
     allRequests.sort((a, b) => new Date(b.inserted_at) - new Date(a.inserted_at));
     setRequests(allRequests);
@@ -207,6 +230,10 @@ export default function Dashboard() {
   const toggleDetails = (idx) => {
     setExpandedIdx(expandedIdx === idx ? null : idx);
   };
+  // const handleCreateInvoice 
+  const handleCreateInvoice = (request) => {
+    navigate('/admin/payment', { state: { request } });
+  };
 
   return (
     <div className="dashboard-container">
@@ -221,7 +248,16 @@ export default function Dashboard() {
       <button onClick={handleLogout} className="logout">
         Log Out
       </button>
-
+      {role === 'admin' && (
+        <div style={{ margin: '0.5rem 0' }}>
+          <button
+            onClick={() => navigate('/admin/payment')}
+            className="edit-profile"
+          >
+            Upload Invoice
+          </button>
+        </div>
+)}
       {role === 'admin' && (
         <div style={{ margin: '1rem 0' }}>
           {!isEditing ? (
@@ -268,6 +304,7 @@ export default function Dashboard() {
               <th>Date Submitted</th>
               <th>Status</th>
               <th>Details</th>
+              <th>Payments</th>
             </tr>
           </thead>
           <tbody>
@@ -317,10 +354,28 @@ export default function Dashboard() {
                         {expandedIdx === idx ? 'Hide' : 'View'}
                       </button>
                     </td>
+                    {/* {role === 'admin' && (
+                      <td>
+                        {req.invoiceUrl ? (
+                          <button onClick={() => setInvoiceUrl(req.invoiceUrl)}>View Invoice</button>
+                        ) : (
+                          ''
+                        )}
+                      </td>
+                    )} */}
+                
+                      <td>
+                        {req.invoiceUrl ? (
+                          <button onClick={() => setInvoiceUrl(req.invoiceUrl)}>View Invoice</button>
+                        ) : (
+                          ''
+                        )}
+                      </td>
+                  
                   </tr>
                   {expandedIdx === idx && (
                     <tr className="details-row">
-                      <td colSpan={role === 'admin' ? 6 : 5}>
+                      <td colSpan={role === 'admin' ? 7 : 6}>
                         <div>
                           {Object.entries(req).map(([key, value]) =>
                             !['id', 'user_id', 'inserted_at', 'service', 'status', 'tableName', 'userName'].includes(key) && (
@@ -339,6 +394,14 @@ export default function Dashboard() {
             })}
           </tbody>
         </table>
+      )}
+      {invoiceUrl && (
+        <div className="invoice-modal">
+          <div className="invoice-content">
+            <button onClick={() => setInvoiceUrl(null)} className="close-modal">Close</button>
+            <iframe src={invoiceUrl} width="100%" height="600px" title="Invoice PDF" />
+          </div>
+        </div>
       )}
     </div>
   );
