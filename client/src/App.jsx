@@ -53,10 +53,10 @@ export default function App() {
             <Route path="/form/travel" element={<TravelForm user={user} />} />
             <Route path="/form/property" element={<PropertyInterestForm user={user} />} />
             <Route path="/form/business" element={<BusinessForm user={user} />} />
+            <Route path="/admin/payment" element={<AdminPayment user={user} />} />
             {/* <Route path="/settings" element={<SettingsPage />} /> */}
           </Route>
           <Route path="/edit-profile" element={<EditProfile user={user} />} />
-          <Route path="/admin/payment" element={<AdminPayment user={user} />} />
           </>
         )}
 
